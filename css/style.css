@@ -1,0 +1,37 @@
+body {
+    font-family: 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 115%;
+}
+
+header {
+    background-color: #d3d3d3;
+}
+
+nav {
+    background-color: #aed8e6;
+}
+
+main {
+    background-color: #feff00;
+    font-size: 100%
+}
+
+footer {
+    background-color: #d3d3d3;
+}
+
+li {
+    visibility:visible;
+    width: 26%;
+    display: inline-block;
+}
+
+h1 {
+    text-align: center;
+    font-family: "Lucida Calligraphy";
+    color:#0d0a8d;
+}
+
+p{
+    line-height: 15px;
+}
