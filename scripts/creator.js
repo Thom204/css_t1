@@ -69,11 +69,11 @@ function updateTotals() {
 
 
 form.addEventListener('submit', (e) => {
-    e.preventDefault()
-
     const duration = Number(document.getElementById('duration').value)
     const budget = Number(document.getElementById('budget').value)
     const saving = Number(document.getElementById('saving').value)
+
+    e.preventDefault()
 
     if (saving > budget) {
         alert('La meta de ahorro no puede ser mayor que el presupuesto')
@@ -86,10 +86,11 @@ form.addEventListener('submit', (e) => {
 })
 
 
-form.addEventListener('input', (e) => {
+form.addEventListener('input', (e) => {    
     const duration = Number(document.getElementById('duration').value)
     const budget = Number(document.getElementById('budget').value)
     const saving = Number(document.getElementById('saving').value)
+
 
     if (saving > budget) {
         document.getElementById('saving').value = 0
@@ -119,6 +120,46 @@ document.getElementById("reset").onclick = () => {
     window.location.reload()
 }
 
-document.getElementById("create_plan").onclick = async () => {
-    //DB binding
+document.getElementById("create_plan").onclick = async () => {        
+    const budget = Number(document.getElementById('budget').value)
+    const saving = Number(document.getElementById('saving').value)
+    const stdt = document.getElementById("stdt")
+
+
+    const {
+        data: { user },
+        error: authError
+    } = await sb.auth.getUser()
+
+    if (authError || !user) {
+        alert("Usuario no autenticado")
+        return
+    }
+    if (budget < saving || Number(rem.innerText) < 0 || duration < 0) {
+        alert("Datos invalidos")
+        return
+    }
+    if(stdt.value == "") {
+        alert("Por favor proporcione una fecha valida")
+        return
+    }
+
+    //insert plan
+    
+    const { data: plan, error: planError } = await sb.from('plans').insert({
+        user_id: user.id,
+        duration: Number(document.getElementById('duration').value),
+        total_budget: budget,
+        saving_goal: saving,
+        monthly_budget: Number(monthly.value),
+        start_date: stdt.value
+    }).select().single()
+
+    if (planError) {
+        alert(planError.message)
+        return
+    }
+
+    //insert cat
+
 }
