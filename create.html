@@ -4,8 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+    <div>
+        <h1>Crear plan</h1>
+        <p>
+            Llenando los campos a continuación podrás crear un
+            <br>plan para gestión de tus gastos y metas de ahorro
+        </p>
+
+        <form id="plan_form">
+            <label>
+            Duración (meses):
+            <input type="number" id="duration" min="1" max="12" value="6" required>
+            </label>
+
+            <label>
+            Presupuesto total:
+            <input type="number" id="budget" min="0" required>
+            </label>
+
+            <label>
+            Meta de ahorro:
+            <input type="number" id="saving" min="0" required>
+            </label>
+
+            <button type="submit" id="submit">Continuar</button>
+        </form>
+        
+
+        <div id="calculated" style="display: none;">
+            <p>Presupuesto mensual:</p>
+            <p id="monthly_budget"></p>
+            <div style = "display: grid; grid-template-columns: auto auto;">
+                <p>Presupuesto sin asignar:</p>
+                <p>Presupuesto asignado:</p>
+                <p id="remaining_budget"></p>
+                <p id="allocated_budget">0</p>
+                <button id="create_cat">Nueva categoría</button>
+                <button id = "reset">Reiniciar</button>
+            </div>
+            <div id="cat_table"></div>
+            <button id="create_plan">Crear plan</button>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/creator.js"></script>
 </body>
 </html>
