@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div>
+        <h1>Aquí podras añadir gastos o ingresos</h1>
+        <button id="create_mov">Nuevo movimiento</button>
+
+        <form id="query_form">
+            <input type="date" id="init_date" name="init_date">
+            <input type="date" id="end_date" name="end_date">
+        </form>
+
+        <iframe src="exp_viewer.html" frameborder="0" id="expenses"></iframe>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/expenseAdd.js"></script>
+</body>
+</html>

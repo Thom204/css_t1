@@ -57,3 +57,7 @@ form > *{
     column-gap: 10px;
     justify-content: space-between;
 }
+
+iframe {
+    border-radius: 10px;
+}
