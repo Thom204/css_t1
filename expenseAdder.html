@@ -8,12 +8,39 @@
 </head>
 <body>
     <div>
-        <h1>Aquí podras añadir gastos o ingresos</h1>
-        <button id="create_mov">Nuevo movimiento</button>
+        <h1>Añadir gastos o ingresos</h1>
+        <form>
+            <label for="movName">Concepto:</label>
+            <input type="text" name="movName" id="mov_desc">
+                
+            
+            <label for="valor">Valor:</label>
+            <input type="number" min="0" name="valor" id="mov_amount">
+            
+            <label for="exp_type">Tipo de movimiento:</label>
+            <select name = "exp_type" id="mov_kind">
+                <option value="expense">Egreso (gasto)</option>
+                <option value="income">Ingreso</option>
+            </select>
+                
+            <label for="date">Fecha del movimiento:</label>
+            <input type="date" id="mov_date">
 
+            <label for="mov_cat">Categoria:</label>
+            <select name="mov_cat" id="mov_cat"></select>
+
+            <button type="submit" id="create_mov">Guardar movimiento</button>
+        </form>
+        <hr>
+        <h1>Mis Movimientos</h1>
         <form id="query_form">
-            <input type="date" id="init_date" name="init_date">
-            <input type="date" id="end_date" name="end_date">
+                <label for="init_date">Fecha inicial:</label>
+                <input type="date" id="init_date" name="init_date">
+
+                <label for="end_date">Fecha final:</label>
+                <input type="date" id="end_date" name="end_date">
+
+                <button type="submit" id = "query_new_filters">Actualizar filtros</button>
         </form>
 
         <iframe src="exp_viewer.html" frameborder="0" id="expenses"></iframe>

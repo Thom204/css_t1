@@ -44,13 +44,43 @@ button:hover{
     border-width: 1px 1px 5px 5px;
 }
 
+form {
+    background-color:  rgba(102, 130, 255,0.8);
+    border-radius: 15px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.75rem 1rem;
+    align-items: center;
+    width: 90%;
+}
+
 form > *{
     margin: 10px 0px;
     overflow:  hidden;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    display: block;
 }
+
+form label {
+    text-align: right;
+    white-space: nowrap;
+}
+
+form input,
+form select,
+form textarea {
+    width: 90%;
+}
+
+form button {
+    grid-column: span 2;
+}
+
+form span input {
+    width: auto;
+}
+
 
 .category {
     display: flex;
@@ -60,4 +90,40 @@ form > *{
 
 iframe {
     border-radius: 10px;
+    width: 100vh;
+    height: 50vh;
+    margin-top: 20px;
+
+}
+
+#iframeBody {
+    background-color: rgb(102, 130, 255);
+    display: grid;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#iframeBody div {
+    display: grid;
+    grid-template-columns: 
+        120px   /* date */
+        100px   /* kind */
+        100px   /* category */
+        100px   /* amount */
+        140px    /* description */
+        0.5fr;
+    
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #ddd;
+}
+
+#iframeBody div span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#iframeBody div button {
+    padding: 10px;
 }
