@@ -1,7 +1,26 @@
+:root {
+    --background-image: none;
+    --bgcolor:  rgb(20, 7, 43);
+    --divcolor: rgb(174, 240, 255);
+    --opcty: 1.0;
+    --formcolor: rgba(102, 130, 255,0.8);
+    --ffamily: 'Courier New', Courier, monospace;
+}
+
+body.privileged-theme {
+    --background-image: url('../media/bckg.jpg');
+    --bgcolor: rgb(166, 131, 255);
+    --divcolor: rgba(230, 150, 255, 0.8);
+    --opcty: 1.0;
+    --formcolor:  rgba(255, 245, 179, 0.8);
+    --ffamily: 'Times New Roman';
+}
+
 body {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: var(--ffamily);
     font-size: 115%;
-    background-color: rgb(20, 7, 43);
+    background-color: var(--bgcolor);
+    background-image: var(--background-image);
     justify-content: center;
     display: flex;
 }
@@ -16,10 +35,11 @@ div {
     grid-template-columns: auto;
     justify-content: center;
     justify-self: center;
-    background-color: aquamarine;
+    background-color: var(--divcolor);
     border-radius: 25px;
     border : 25px;
     padding: 25px;
+    opacity: var(--opcty);
 }
 
 div * {
@@ -29,6 +49,7 @@ div * {
 .btn_ctr {
     width: 100%;
     gap: 25px;
+    background-color: rgba(0,0,0,0);
 }
 
 button {
@@ -38,14 +59,17 @@ button {
     border-radius: 15px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
+    transition-property: background-color border;
+    transition: linear .2s;
 }
 
 button:hover{
     border-width: 1px 1px 5px 5px;
+    background-color: rgb(183, 106, 234);
 }
 
 form {
-    background-color:  rgba(102, 130, 255,0.8);
+    background-color: var(--formcolor);
     border-radius: 15px;
     padding: 15px;
     display: grid;
@@ -71,6 +95,10 @@ form input,
 form select,
 form textarea {
     width: 90%;
+    height: 75%;
+    background-color: #d4ceff;
+    border-radius: 5px;
+    border: 1px solid black;
 }
 
 form button {
@@ -97,10 +125,10 @@ iframe {
 }
 
 #iframeBody {
-    background-color: rgb(102, 130, 255);
     display: grid;
     justify-content: center;
     gap: 0.5rem;
+    background-color: var(--formcolor);
 }
 
 #iframeBody div {
@@ -115,13 +143,12 @@ iframe {
     
     align-items: center;
     padding: 0.4rem 0.6rem;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #000000;
 }
 
 #iframeBody div span {
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    text-overflow: wrap;
 }
 
 #iframeBody div button {

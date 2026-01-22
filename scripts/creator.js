@@ -1,6 +1,8 @@
 const SUPABASE_URL = 'https://kcgafrfckiaqsvvhgrzf.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_7uE2TT6IsgrXOPFpYWisyg_nmcyDoL7'
 
+const PRIVILEGED_EMAILS = ["dperezgu@unal.edu.co", "perezdaren008@gmail.com", "thom191104@gmail.com"]
+
 const sb = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
@@ -13,6 +15,13 @@ const catTable = document.getElementById('cat_table')
 const createCatBtn = document.getElementById('create_cat')
 const rem = document.getElementById("remaining_budget")
 const alloc = document.getElementById("allocated_budget")
+
+function applyUserTheme(user) {
+
+    if (PRIVILEGED_EMAILS.includes(user.email)) {
+        document.body.classList.add("privileged-theme")
+    }
+}
 
 
 function createCategory() {
@@ -228,3 +237,9 @@ document.getElementById("create_plan").onclick = async () => {
     alert("Plan creado correctamente")
     window.location.href = "/app.html"
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const { data : {user}} = await sb.auth.getUser()
+    
+    applyUserTheme(user)
+})

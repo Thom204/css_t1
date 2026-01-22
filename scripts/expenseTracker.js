@@ -6,10 +6,19 @@ const new_plan = document.querySelector("#newdashboard")
 const expenses = document.querySelector('#expenses')
 const logout_b = document.getElementById('logout_btn')
 
+const PRIVILEGED_EMAILS = ["dperezgu@unal.edu.co", "perezdaren008@gmail.com", "thom191104@gmail.com"]
+
 const sb = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 )
+
+function applyUserTheme(user) {
+
+    if (PRIVILEGED_EMAILS.includes(user.email)) {
+        document.body.classList.add("privileged-theme")
+    }
+}
 
 existent_plan.onclick = () => {
     window.location.href = "viewer.hmtl"
@@ -81,6 +90,8 @@ async function  updateUI() {
         console.log("nanay")
         window.location.href = "index.html"
     }
+
+    applyUserTheme(user)    
 }
 
 // Listen for auth changes

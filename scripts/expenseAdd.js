@@ -6,6 +6,8 @@ const sb = window.supabase.createClient(
     SUPABASE_ANON_KEY
 )
 
+const PRIVILEGED_EMAILS = ["dperezgu@unal.edu.co", "perezdaren008@gmail.com", "thom191104@gmail.com"]
+
 const startDate = document.getElementById("init_date")
 const endDate = document.getElementById("end_date")
 const iframe = document.getElementById('expenses')
@@ -54,6 +56,7 @@ async function loadActivePlan() {
     }
 
     currentPlanId = data.id
+    applyUserTheme(user)
     fetchCategories(currentPlanId)
 }
 
@@ -112,6 +115,14 @@ async function fetchCategories(planId) {
 
     renderCat(data)
 }
+
+function applyUserTheme(user) {
+
+    if (PRIVILEGED_EMAILS.includes(user.email)) {
+        document.body.classList.add("privileged-theme")
+    }
+}
+
 
 function renderCat(categories) {
     const container = document.getElementById("mov_cat")

@@ -6,6 +6,7 @@ const sb = window.supabase.createClient(
     SUPABASE_ANON_KEY
 )
 
+
 const loginBtn = document.getElementById('login')
 const inviteBtn = document.getElementById('invite')
 const userText = document.getElementById('user')
@@ -15,9 +16,9 @@ const userText = document.getElementById('user')
 loginBtn.onclick = async () => {
     await sb.auth.signInWithOAuth({
         provider: 'google',
-        options : {
+        /*options : {
             redirectTo : "https://thom204.github.io/css_t1/index.html"
-        }
+        }*/
     })
 }
 
