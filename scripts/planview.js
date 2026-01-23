@@ -1,7 +1,6 @@
 const SUPABASE_URL = 'https://kcgafrfckiaqsvvhgrzf.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_7uE2TT6IsgrXOPFpYWisyg_nmcyDoL7'
 
-const displayDuration = document.getElementById("nmonths")
 let cachedPlan = null
 let cachedMonths = null
 let cachedAgg = null
@@ -49,8 +48,6 @@ async function oneQueryToRuleThemAll(force = false) {
         return
     }
 
-    displayDuration.value = plan.duration
-
     const { data : categories, error : catError} = await sb.
     from("categories")
     .select("id, name, amount")
@@ -69,7 +66,7 @@ async function oneQueryToRuleThemAll(force = false) {
         return
     }
 
-    const months = getPlanMonths(plan.start_date, displayDuration.value)
+    const months = getPlanMonths(plan.start_date, plan.duration)
     const agg = aggregateExpenses(expenses, categories, months)
 
     cachedPlan = plan
@@ -142,13 +139,13 @@ function aggregateExpenses(expenses, categories, months) {
 }
 
 function heatColor(percent) {
-    if (percent <= 0) return "#f1f5f9" // empty
+    if (percent <= 0) return "#9bcdff" // empty
 
     // Clamp value
     percent = Math.min(percent, 1.2)
 
     // Green → Yellow → Red
-    const r = Math.floor(255 * Math.min(1, percent * 1.2))
+    const r = Math.floor(255 * Math.min(1, percent * 0.5))
     const g = Math.floor(255 * Math.max(0, 1 - percent * 0.8))
     const b = 80
 
@@ -201,7 +198,8 @@ function renderTable(months, categories, agg) {
             const cell = document.createElement("div")
 
             cell.className = `cell ${cls}`
-            cell.innerHTML = `${data.budget} / ${data.spent}`
+            cell.dataset.tooltip = `Has usado: ${Math.round(percent * 100)}% del presupuesto`
+            cell.innerHTML = `${data.spent} / ${data.budget}`
             container.appendChild(cell)
         })
     })
@@ -222,7 +220,10 @@ function renderTable(months, categories, agg) {
         else if (data.spent === 0) cls = "empty"
 
         const cell = document.createElement("div")
-        cell.innerHTML = `${data.budgetTotal} / ${data.spentTotal}`
+        cell.className = `cell ${cls}`
+        cell.style.backgroundColor = heatColor(percent)
+        cell.dataset.tooltip = `Has usado: ${Math.round(percent * 100)}% del presupuesto`
+        cell.innerHTML = `${data.spentTotal} / ${data.budgetTotal}`
         container.appendChild(cell)
     })
 }

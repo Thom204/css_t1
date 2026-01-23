@@ -10,10 +10,15 @@
 <body style="background-image: url('media/bckg_03.jpg');">
     <div style="width: 80%;">
         
-        <button onclick="href = 'index.html';">Volver</button>
-        <label for="nmonths">Meses a mostrar</label>
-        <input type="number" id = "nmonths" name = "nmonths" value="1">
-        <div class = "stateTable"></div>
+        <button onclick="window.location.href = 'app.html';">Volver</button>
+        <h1>Estado de el plafinanciero:</h1>
+        <p>Aquí tendrás vistas interactivas para gestionar que que tanto has seguido el presupuesto.</p>
+        <h2>Tabla de registros:</h2>
+        <div class = "stateTable">
+        </div>
+        <h2>Grafico de progreso</h2>
+        <div class = "graph">
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
