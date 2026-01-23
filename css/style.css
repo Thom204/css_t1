@@ -154,3 +154,42 @@ iframe {
 #iframeBody div button {
     padding: 10px;
 }
+
+.stateTable {
+    gap: 15px;
+}
+
+.stateTable * {
+    background: #f7d0ff;
+    border-radius: 0px;
+    border: 2px solid black;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 6px;
+}
+
+.header {
+    font-weight: bold;
+    text-align: center;
+    background: #f3f3f3;
+}
+
+.category-name {
+    background: #f3f3f0;
+    font-weight: 500;
+}
+
+.category-name.total-row {
+    background: #7cc8ff;
+}
+
+.cell {
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.cell.ok { background: #68ff63; }
+.cell.warn { background: #aaff69; }
+.cell.over { background: #ff4f4f; }
+.cell.empty { background: #adf3ff; }

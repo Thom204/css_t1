@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plan Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type = "image/x-icon" href="media/favicon.ico" style="display: none;">
 </head>
-<body>
+<body style="background-image: url('media/bckg_03.jpg');">
+    <div style="width: 80%;">
+        
+        <button onclick="href = 'index.html';">Volver</button>
+        <label for="nmonths">Meses a mostrar</label>
+        <input type="number" id = "nmonths" name = "nmonths" value="1">
+        <div class = "stateTable"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="scripts/planview.js"></script>
 </body>
 </html>

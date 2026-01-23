@@ -21,7 +21,7 @@ function applyUserTheme(user) {
 }
 
 existent_plan.onclick = () => {
-    window.location.href = "viewer.hmtl"
+    window.location.href = "viewer.html"
 }
 
 new_plan.onclick = async () => {
