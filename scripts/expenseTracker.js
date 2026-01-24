@@ -5,6 +5,7 @@ const existent_plan = document.querySelector("#mydashboard")
 const new_plan = document.querySelector("#newdashboard")
 const expenses = document.querySelector('#expenses')
 const logout_b = document.getElementById('logout_btn')
+let hasPlan = false
 
 const PRIVILEGED_EMAILS = ["dperezgu@unal.edu.co", "perezdaren008@gmail.com", "thom191104@gmail.com"]
 
@@ -17,46 +18,50 @@ function applyUserTheme(user) {
 
     if (PRIVILEGED_EMAILS.includes(user.email)) {
         document.body.classList.add("privileged-theme")
+    }else{
+        document.body.style.backgroundImage = "url('')"
     }
 }
 
 existent_plan.onclick = () => {
+    if(!hasPlan) {
+        alert("Este usuario No tiene un plan activo, puede crear uno con el boton 'Nuevo Plan'")
+        return
+    }
+
     window.location.href = "viewer.html"
 }
 
-new_plan.onclick = async () => {
-    const {data: { user }} = await sb.auth.getUser()
-
-    if (!user) {
-        alert("Usuario no autenticado")
-        return
-    }
-
-    const { data: plan, error } = await sb
-        .from('plans')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle()
-
-    if (error) {
-        alert(error.message)
-        return
-    }
-
-    if (!plan) {
-        window.location.href = "create.html"
-    } else {
-        alert("Este usuario ya tiene un plan activo, puede verlo en 'mi plan'")
-    }
+new_plan.onclick = () => {
+    window.location.href = "create.html"
 }
 
-expenses.onclick = async () => {
-    const {data : { user }} = await sb.auth.getUser()
-
-    if (!user) {
-        alert("Usuario no autenticado")
+expenses.onclick = () => {
+    if (!hasPlan) {
+        alert("Este usuario No tiene un plan activo, puede crear uno con el boton 'Nuevo Plan'")
         return
     }
+    
+    window.location.href = "expenseAdder.html" 
+}
+
+logout_b.onclick = async () => {
+    await sb.auth.signOut()
+}
+
+async function  updateUI() {
+    const { data: { user } } = await sb.auth.getUser()
+
+
+    if (user) {
+        document.querySelector("#username").innerHTML = user.email;
+        console.log(user.email)
+    } else {
+        console.log("nanay")
+        window.location.href = "index.html"
+    }
+
+    applyUserTheme(user)    
 
     const { data: plan, error } = await sb
         .from('plans')
@@ -70,28 +75,10 @@ expenses.onclick = async () => {
     }
 
     if (plan) {
-        window.location.href = "expenseAdder.html" 
-    } else {
-        alert("Este usuario No tiene un plan activo, puede crear uno con el boton 'Nuevo Plan'")
+        hasPlan = true
+        new_plan.innerHTML = "Mi plan"
     }
-}
-
-logout_b.onclick = async () => {
-    await sb.auth.signOut()
-}
-
-async function  updateUI() {
-    const { data: { user } } = await sb.auth.getUser()
-
-    if (user) {
-        document.querySelector("#username").innerHTML = user.email;
-        console.log(user.email)
-    } else {
-        console.log("nanay")
-        window.location.href = "index.html"
-    }
-
-    applyUserTheme(user)    
+    else hasPlan=false
 }
 
 // Listen for auth changes

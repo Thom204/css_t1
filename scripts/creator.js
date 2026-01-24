@@ -15,14 +15,16 @@ const catTable = document.getElementById('cat_table')
 const createCatBtn = document.getElementById('create_cat')
 const rem = document.getElementById("remaining_budget")
 const alloc = document.getElementById("allocated_budget")
+let cachedPlan = null
 
 function applyUserTheme(user) {
 
     if (PRIVILEGED_EMAILS.includes(user.email)) {
         document.body.classList.add("privileged-theme")
+    }else{
+        document.body.style.backgroundImage = "url('')"
     }
 }
-
 
 function createCategory() {
     const row = document.createElement('div')
@@ -54,7 +56,6 @@ function createCategory() {
     return row
 }
 
-
 function updateTotals() {
     const amountInputs = document.querySelectorAll('.category input[type="number"]')
     const monthlyBudget = Number(monthly.innerText)
@@ -83,7 +84,6 @@ function updateTotals() {
     }
 }
 
-
 form.addEventListener('submit', (e) => {
     const duration = Number(document.getElementById('duration').value)
     const budget = Number(document.getElementById('budget').value)
@@ -101,7 +101,6 @@ form.addEventListener('submit', (e) => {
     rem.value = monthly.value
     rem.innerText = monthly.innerText
 })
-
 
 form.addEventListener('input', (e) => {    
     const duration = Number(document.getElementById('duration').value)
@@ -131,14 +130,12 @@ form.addEventListener('input', (e) => {
     }
 })
 
-
 createCatBtn.addEventListener('click', () => {
     document.querySelectorAll("form input").forEach( e => {e.disabled = true;});
     document.getElementById("submit").style.display = 'none'
     document.getElementById("reset").style.display = 'inherit'
     catTable.appendChild(createCategory())
 })
-
 
 document.getElementById("reset").onclick = () => {
     window.location.reload()
@@ -238,8 +235,88 @@ document.getElementById("create_plan").onclick = async () => {
     window.location.href = "/app.html"
 }
 
+document.getElementById('delete_plan').onclick = async () => {
+    if(!cachedPlan){
+        console.log("cache plan miss")
+        return
+    }
+    const {data, error}  = await sb.from("plans")
+            .delete()
+            .eq("id", cachedPlan.id)
+
+    if (error) {
+        console.log(error.message)
+        return
+    }
+
+    alert("Plan eliminado con exito")
+    window.location.href = "app.html"
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const { data : {user}} = await sb.auth.getUser()
-    
+
+    if (!user) {
+        return
+    }
+
     applyUserTheme(user)
+
+    const { data: plan, error: e} = await sb.from('plans')
+                                .select("id, duration, total_budget, saving_goal, monthly_budget")
+                                .eq("user_id", user.id)
+                                .limit(1)
+                                .single()
+    
+    if (plan) {
+        console.log(plan)
+        cachedPlan = plan
+        document.getElementById('duration').value = plan.duration
+        document.getElementById('budget').value = plan.total_budget
+        document.getElementById('saving').value = plan.saving_goal
+        document.getElementById("submit").style.display = 'none'
+        document.querySelectorAll("form input").forEach( e => {e.disabled = true;});
+        document.getElementById('title').innerText = 'Mi plan'
+        document.getElementById('desc').innerText = 'A continuacion se muestra la informacion de tu plan'
+        
+        nxtdiv.style.display = 'grid'
+        monthly.value = plan.monthly_budget
+        monthly.innerText = plan.monthly_budget
+        rem.value = monthly.value
+        rem.innerText = monthly.innerText
+
+        const { data : cat, error} = await sb.from('categories')
+                                        .select("id, name, amount")
+                                        .eq("plan_id", plan.id)
+
+        if (error){
+            console.log(error.message)
+        }
+
+        if (!cat) {
+            console.log("err")
+        }
+
+        console.log(cat)
+    
+        cat.forEach( c => {
+            const row = createCategory()
+            const t = row.querySelector('input[type="text"]')
+            t.value = c.name
+            t.disabled = true
+            const n = row.querySelector('input[type="number"]')
+            n.value = c.amount
+            n.disabled = true
+            row.querySelector("button").disabled = true
+            catTable.appendChild(row)
+        })
+
+        document.querySelectorAll(".tog").forEach(e => {
+            if(e.style.display == 'none') {
+                e.style.display = 'inherit'
+            }else{
+                e.style.display = 'none'
+            }
+        })
+    }
 })

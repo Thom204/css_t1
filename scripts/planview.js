@@ -80,21 +80,28 @@ async function oneQueryToRuleThemAll(force = false) {
 function applyUserTheme(user) {
     if (PRIVILEGED_EMAILS.includes(user.email)) {
         document.body.classList.add("privileged-theme")
+    }else{
+        document.body.style.backgroundImage = "url('')"
     }
 }
 
 function getPlanMonths(startDate, duration) {
     const months = []
-    const start = new Date(startDate)
+
+    const [year, month] = startDate.split("-").map(Number)
+    const startYear = year
+    const startMonth = month - 1 // JS months are 0-based
 
     for (let i = 0; i < duration; i++) {
-        const d = new Date(start)
-        d.setMonth(start.getMonth() + i)
+        const d = new Date(startYear, startMonth + i, 1)
 
         months.push({
             year: d.getFullYear(),
-            month: d.getMonth(), // 0–11
-            label: d.toLocaleString("default", { month: "short", year: "numeric" })
+            month: d.getMonth(),
+            label: d.toLocaleString("default", {
+                month: "short",
+                year: "numeric"
+            })
         })
     }
 
@@ -145,13 +152,17 @@ function heatColor(percent) {
     percent = Math.min(percent, 1.2)
 
     // Green → Yellow → Red
-    const r = Math.floor(255 * Math.min(1, percent * 0.5))
-    const g = Math.floor(255 * Math.max(0, 1 - percent * 0.8))
-    const b = 80
+    const r = Math.floor(255 * Math.min(1, Math.exp(10*(percent-1.1))))
+    const g = Math.floor(255 * Math.max(0, 1 - Math.exp(8*(percent - 1.1))))
+    const b = 50
 
     return `rgb(${r}, ${g}, ${b})`
 }
-
+/*
+const ps = document.getElementById('perselect')
+ps.addEventListener('input', () => {
+    document.getElementById('percol_test').style.backgroundColor = heatColor(ps.value/100)
+})*/
 
 function renderTable(months, categories, agg) {
     const container = document.querySelector(".stateTable")
@@ -197,6 +208,7 @@ function renderTable(months, categories, agg) {
 
             const cell = document.createElement("div")
 
+            cell.style.backgroundColor = heatColor(percent)
             cell.className = `cell ${cls}`
             cell.dataset.tooltip = `Has usado: ${Math.round(percent * 100)}% del presupuesto`
             cell.innerHTML = `${data.spent} / ${data.budget}`
@@ -228,6 +240,36 @@ function renderTable(months, categories, agg) {
     })
 }
 
+function renderMonthlyChart(months, agg) {
+  const labels = months.map(m => m.label)
+  const spent = months.map(m => agg[`${m.year}-${m.month}`].spentTotal)
+  const budget = months.map(m => agg[`${m.year}-${m.month}`].budgetTotal)
+
+  const ctx = document.getElementById("monthlyChart")
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Budget",
+          data: budget
+        },
+        {
+          label: "Spent",
+          data: spent
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: "Monthly Budget vs Spent" }
+      }
+    }
+  })
+}
 
 window.addEventListener('DOMContentLoaded', async () => {
     const {months, categories, agg} = await oneQueryToRuleThemAll()
@@ -235,4 +277,5 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log(categories)
     console.log(agg)
     renderTable(months, categories, agg)
+    renderMonthlyChart(months, agg)
 })

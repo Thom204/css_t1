@@ -120,6 +120,8 @@ function applyUserTheme(user) {
 
     if (PRIVILEGED_EMAILS.includes(user.email)) {
         document.body.classList.add("privileged-theme")
+    }else{
+        document.body.style.backgroundImage = "url('')"
     }
 }
 
@@ -212,4 +214,6 @@ document.getElementById("create_mov").addEventListener("click", async (e) => {
         date,
         description
     })
+
+    //limpiar form
 })
