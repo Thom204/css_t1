@@ -59,6 +59,7 @@ button, a {
     border-radius: 15px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
+    font-size: 15px;
     transition-property: background-color border;
     transition: linear .2s;
 }

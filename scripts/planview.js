@@ -160,13 +160,13 @@ function heatColor(percent, invred = false) {
     percent = Math.min(percent, 1.2)
 
     // Green → Yellow → Red
-    const r = Math.floor(255 * Math.min(1, Math.exp(10*(percent-1.1))))
-    const g = Math.floor(255 * Math.max(0, 1 - Math.exp(8*(percent - 1.1))))
+    const r = Math.floor(255 * Math.min(1, Math.exp(4*(percent-1.1))))
+    const g = Math.floor(255 * Math.max(0, 1 - Math.exp(4*(percent - 1.1))))
     const b = 50
 
-    if (invred) return `rgb(${b}, ${r}, ${g})`
+    if (invred) return `rgb(${b}, ${r * 8 + 20}, ${g})`
 
-    return `rgb(${r}, ${g}, ${b})`
+    return `rgb(${r}, ${g * 4}, ${b})`
 }
 
 function updateHeaders(nmonths) {
@@ -179,7 +179,7 @@ function updateHeaders(nmonths) {
 
     const pbar  = document.getElementById('barFill')
     pbar.style.width = `${((perc>0)?perc:0).toFixed(2)}%`
-    pbar.style.color = heatColor((saving > 0)? saving / cachedPlan.saving_goal : 1.5)
+    pbar.style.backgroundColor = heatColor((saving > 0)? saving / cachedPlan.saving_goal : 1.5, true)
     document.getElementById('barLabel').innerText = `${(perc).toFixed(2)} %`
     
     const veredict = document.getElementById('savingDetail')

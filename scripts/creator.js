@@ -240,6 +240,11 @@ document.getElementById('delete_plan').onclick = async () => {
         console.log("cache plan miss")
         return
     }
+
+    if(!confirm("¿esta segura de que desea eliminar su plan? esta accion no puede deshacerse.")){
+        return
+    }
+
     const {data, error}  = await sb.from("plans")
             .delete()
             .eq("id", cachedPlan.id)
