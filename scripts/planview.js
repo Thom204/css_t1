@@ -342,20 +342,49 @@ function renderMonthlyChart(months, agg) {
         labels,
         datasets: [
             {
-            label: "Budget",
+            label: "Presupuestado",
             data: budget
             },
             {
-            label: "Spent",
+            label: "Gastado",
             data: spent
             }
         ]
         },
         options: {
-        responsive: true,
-        plugins: {
-            title: { display: true, text: "Monthly Budget vs Spent" }
-        }
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size : 15
+                        },
+                        color : "#000000"
+                    }
+                },
+                tooltip: {
+                    titleColor: "#000000",
+                    bodyColor: "#000000"
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                    font: {
+                        size : 14
+                    },
+                    color: "#000000"
+                    }
+                },
+                y: {
+                    ticks: {
+                    font: {
+                        size : 14
+                    },
+                    color: "#000000"
+                    }
+                }
+            }
         }
     })
 }
@@ -368,7 +397,7 @@ function renderBalanceChart(data) {
         data: {
             labels: data.map(d => d.label),
             datasets: [{
-                label: "Cumulative Balance",
+                label: "Balance Acumulado",
                 data: data.map(d => d.value),
                 spanGaps: false,   // 🔥 important
                 borderWidth: 2,
@@ -391,6 +420,32 @@ function renderBalanceChart(data) {
                                 ? `Present balance: ${ctx.raw}`
                                 : `Balance: ${ctx.raw}`
                         }
+                    }
+                },
+                legend:  {
+                    labels: {
+                        font: {
+                            size : 15
+                        },
+                        color : "#000000"
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                    font: {
+                        size : 14
+                    },
+                    color: "#000000"
+                    }
+                },
+                y: {
+                    ticks: {
+                    font: {
+                        size : 14
+                    },
+                    color: "#000000"
                     }
                 }
             }
