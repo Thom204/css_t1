@@ -52,7 +52,7 @@ div * {
     background-color: rgba(0,0,0,0);
 }
 
-button {
+button, a {
     padding: 15px;
     background-color: rgb(139, 95, 214);
     border: 3px solid rgb(67, 42, 109);
@@ -63,7 +63,12 @@ button {
     transition: linear .2s;
 }
 
-button:hover{
+a {
+    text-decoration: none;
+    color: black;
+}
+
+button:hover, a:hover{
     border-width: 1px 1px 5px 5px;
     background-color: rgb(183, 106, 234);
 }
@@ -235,4 +240,40 @@ iframe {
 .cell:hover::after,
 .cell:hover::before {
     opacity: 1;
+}
+
+canvas {
+    width: 80%;
+}
+
+.bar {
+    position: relative;
+    height: 20px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 80%;
+    display: flex;
+    justify-content: flex-start;
+    padding: 0px;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 50%;
+    background: #4caf50;
+    border-radius: 0px;
+    padding: 0px;
+    margin: 0px;
+    /*transition: width 0.3s;*/
+}
+
+.bar-label {
+    font-weight: bold;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    line-height: 20px;
+    font-size: 0.85rem;
 }

@@ -9,20 +9,39 @@
 </head>
 <body style="background-image: url('media/bckg_03.jpg');">
     <div style="width: 80%;">
-        
-        <button onclick="window.location.href = 'app.html';">Volver</button>
         <h1>Estado de el plafinanciero:</h1>
-        <p>Aquí tendrás vistas interactivas para gestionar que que tanto has seguido el presupuesto.</p>
+        <div>
+            <p>Aquí tendrás vistas interactivas para gestionar que que tanto has seguido el presupuesto.</p>
+            <p>Nota, estos resultados solo son representativos para meses donde ya hayas agregado todos tus gastos.</p>
+            <p id = "budget">Presupuesto total: &Tab;$</p>
+            <p id="spent">Total gastado: &Tab;$</p>
+            <p id="current_money">Saldo actual: &Tab;$</p>
+            <p>Progreso de ahorro: &Tab;</p>
+            <div class="bar">
+                <div class="bar-fill" id="barFill"></div>
+                <span class="bar-label" id="barLabel"></span>
+            </div>
+            <hr>
+            <p id = "savingDetail"></p>
+        </div>
+        <hr>
+        <a href = "tuto.html#collapse">Ver explicacion de codigos de color</a>
+        <hr>
         <h2>Tabla de registros:</h2>
-        <!--<input type="number" id = "perselect" value = "0">
-        <div id = "percol_test"></div>-->
-        <div class = "stateTable">
+        <div class = "stateTable"></div>
+        <hr>
+        <div class = "graph" style="width: 80%;">
+            <h2>Grafico de gasto mensual total:</h2>
+            <p>Aquí se muestra el total gastado vs el presupuesto.</p>
+            <canvas id="monthlyChart"></canvas>
+            <h2>Grafico de balance acumulado:</h2>
+            <p>Aquí se muestra el dinero total sobrante acumulado. (Este dinero es adicional a tu ahorro mensual).</p>
+            <canvas id="balanceChart"></canvas>
         </div>
-        <h2>Grafico de progreso</h2>
-        <div class = "graph">
-        </div>
+        <hr>
+        <button onclick="window.location.href = 'app.html';">Volver</button>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="scripts/planview.js"></script>
 </body>

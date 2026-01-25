@@ -16,9 +16,9 @@ const userText = document.getElementById('user')
 loginBtn.onclick = async () => {
     await sb.auth.signInWithOAuth({
         provider: 'google',
-        options : {
+        /*options : {
             redirectTo : "https://thom204.github.io/css_t1/index.html"
-        }
+        }*/
     })
 }
 

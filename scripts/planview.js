@@ -5,6 +5,9 @@ let cachedPlan = null
 let cachedMonths = null
 let cachedAgg = null
 let cachedCategories = null
+let lem = null
+let spentTotal = null
+let rembalance = null
 
 const PRIVILEGED_EMAILS = ["dperezgu@unal.edu.co", "perezdaren008@gmail.com", "thom191104@gmail.com"]
 
@@ -55,7 +58,7 @@ async function oneQueryToRuleThemAll(force = false) {
 
     const { data: expenses, error : expError } = await sb
     .from("expenses")
-    .select("amount, occurred_at, category_id")
+    .select("amount, kind, occurred_at, category_id")
     .eq("plan_id", plan.id)
 
     if (expenses.length === 0) {
@@ -73,6 +76,7 @@ async function oneQueryToRuleThemAll(force = false) {
     cachedCategories = categories
     cachedMonths = months
     cachedAgg = agg
+    lem = getLastExpenseMonth(expenses)
 
     return { plan, months, agg, categories }
 }
@@ -137,15 +141,19 @@ function aggregateExpenses(expenses, categories, months) {
         const key = `${d.getFullYear()}-${d.getMonth()}`
 
         if (!map[key]) continue // expense outside plan range
-
-        map[key].categories[exp.category_id].spent += exp.amount
-        map[key].spentTotal += exp.amount
+        if(exp.kind == 'expense') {
+            map[key].categories[exp.category_id].spent += exp.amount
+            map[key].spentTotal += exp.amount
+        }else {
+            map[key].categories[exp.category_id].spent -= exp.amount
+            map[key].spentTotal -= exp.amount
+        }
     }
 
     return map
 }
 
-function heatColor(percent) {
+function heatColor(percent, invred = false) {
     if (percent <= 0) return "#9bcdff" // empty
 
     // Clamp value
@@ -156,13 +164,89 @@ function heatColor(percent) {
     const g = Math.floor(255 * Math.max(0, 1 - Math.exp(8*(percent - 1.1))))
     const b = 50
 
+    if (invred) return `rgb(${b}, ${r}, ${g})`
+
     return `rgb(${r}, ${g}, ${b})`
 }
-/*
-const ps = document.getElementById('perselect')
-ps.addEventListener('input', () => {
-    document.getElementById('percol_test').style.backgroundColor = heatColor(ps.value/100)
-})*/
+
+function updateHeaders(nmonths) {
+    const theoretical_saving =  (cachedPlan.saving_goal / cachedPlan.duration) * nmonths 
+    document.getElementById('budget').innerText += cachedPlan.total_budget
+    document.getElementById('spent').innerText += spentTotal
+    document.getElementById('current_money').innerText += (cachedPlan.total_budget - spentTotal)
+    const saving = theoretical_saving + rembalance
+    const perc = saving * 100 / cachedPlan.saving_goal
+
+    const pbar  = document.getElementById('barFill')
+    pbar.style.width = `${((perc>0)?perc:0).toFixed(2)}%`
+    pbar.style.color = heatColor((saving > 0)? saving / cachedPlan.saving_goal : 1.5)
+    document.getElementById('barLabel').innerText = `${(perc).toFixed(2)} %`
+    
+    const veredict = document.getElementById('savingDetail')
+    if(rembalance > 0) {
+        veredict.innerHTML = `Actualmente te encuentras $${rembalance} por encima de tu ahorro planeado. ¡Buen trabajo!`
+    }else if(rembalance < 0) {
+        veredict.innerHTML = `Actualmente te encuentras $${rembalance} por debajo de tu ahorro planeado, pero no te desanimes.`
+        if (nmonths < cachedPlan.duration) veredict.innerHTML += `Todavía puedes compensarlo en los proximos ${nmonths - cachedPlan.duration} meses.` 
+    }else{
+        veredict.innerHTML = `Actualmente te has ceñido al presupuesto al pie de la letra ¡Felicidades!`
+    }
+}
+
+function buildCumulativeBalance(months, agg) {
+    const last = lem
+    if (!last) return []
+
+    let cumulativeBudget = 0
+    let cumulativeSpent = 0
+    let reachedNow = false
+
+    return months.map(m => {
+        const key = `${m.year}-${m.month}`
+        const data = agg[key]
+
+        if (!reachedNow) {
+            cumulativeBudget += data.budgetTotal
+            cumulativeSpent += data.spentTotal
+        }
+
+        const isPresent = m.year === last.year && m.month === last.month + 1
+
+        if (isPresent) reachedNow = true
+
+        return {
+            label: m.label,
+            value: reachedNow ? null : (cumulativeBudget - cumulativeSpent),
+            isPresent
+        }
+    })
+}
+
+function getTotalSpentFromAgg(agg) {
+    let total = 0
+
+    for (const key in agg) {
+        total += agg[key].spentTotal
+    }
+
+    return total
+}
+
+function getLastExpenseMonth(expenses) {
+    if (!expenses.length) return null
+
+    let latest = new Date(expenses[0].occurred_at)
+
+    for (const exp of expenses) {
+        const d = new Date(exp.occurred_at)
+        if (d > latest) latest = d
+    }
+
+    return {
+        year: latest.getFullYear(),
+        month: latest.getMonth()
+    }
+}
 
 function renderTable(months, categories, agg) {
     const container = document.querySelector(".stateTable")
@@ -187,15 +271,6 @@ function renderTable(months, categories, agg) {
         nameCell.innerText = cat.name
         container.appendChild(nameCell)
         
-        /*
-        months.forEach(m => {
-            const key = `${m.year}-${m.month}`
-            const data = agg[key].categories[cat.id]
-
-            const cell = document.createElement("div")
-            cell.innerHTML = renderCell(data.budget, data.spent)
-            container.appendChild(cell)
-        */
         months.forEach(m => {
             const key = `${m.year}-${m.month}`
             const data = agg[key].categories[cat.id]
@@ -241,34 +316,86 @@ function renderTable(months, categories, agg) {
 }
 
 function renderMonthlyChart(months, agg) {
-  const labels = months.map(m => m.label)
-  const spent = months.map(m => agg[`${m.year}-${m.month}`].spentTotal)
-  const budget = months.map(m => agg[`${m.year}-${m.month}`].budgetTotal)
+    const last = lem
+    let reachedNow = false
 
-  const ctx = document.getElementById("monthlyChart")
+    const labels = months.map(m => m.label)
 
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Budget",
-          data: budget
-        },
-        {
-          label: "Spent",
-          data: spent
+    const spent = months.map(m => {
+        const isPresent = m.year === last.year && m.month === last.month + 1
+        if(isPresent) reachedNow = true
+
+        if (!reachedNow) {
+            return agg[`${m.year}-${m.month}`].spentTotal
+        }else{
+            return null
         }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        title: { display: true, text: "Monthly Budget vs Spent" }
-      }
-    }
-  })
+    })
+
+    const budget = months.map(m => agg[`${m.year}-${m.month}`].budgetTotal)
+
+    const ctx = document.getElementById("monthlyChart")
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+        labels,
+        datasets: [
+            {
+            label: "Budget",
+            data: budget
+            },
+            {
+            label: "Spent",
+            data: spent
+            }
+        ]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            title: { display: true, text: "Monthly Budget vs Spent" }
+        }
+        }
+    })
+}
+
+function renderBalanceChart(data) {
+    const ctx = document.getElementById("balanceChart")
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: data.map(d => d.label),
+            datasets: [{
+                label: "Cumulative Balance",
+                data: data.map(d => d.value),
+                spanGaps: false,   // 🔥 important
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: data.map(d => d.isPresent ? 7 : 4),
+                pointBackgroundColor: data.map(d =>
+                    d.isPresent ? "#ff9800" : "#2196f3"
+                )
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const d = data[ctx.dataIndex]
+                            if (d.value === null) return "Future month"
+                            return d.isPresent
+                                ? `Present balance: ${ctx.raw}`
+                                : `Balance: ${ctx.raw}`
+                        }
+                    }
+                }
+            }
+        }
+    })
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -278,4 +405,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log(agg)
     renderTable(months, categories, agg)
     renderMonthlyChart(months, agg)
+    spentTotal = getTotalSpentFromAgg(agg)
+
+    const cums = buildCumulativeBalance(months, agg)
+    const nmonths = lem.month - (new Date(cachedPlan.start_date)).getMonth()
+    rembalance = cums[nmonths-1].value
+    console.log(rembalance)
+
+    updateHeaders(nmonths)
+    renderBalanceChart(cums)
 })
